@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Micaela &amp; Lucas — Nos Casamos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-cream: #FAF7F2;
+      --bg-beige: #F2ECE1;
+      --bg-card: #FFFDF9;
+      --sand-border: #E2D8C8;
+      --gold-accent: #B59E7A;
+      --sage-accent: #8F9A88;
+      --text-main: #3B352E;
+      --text-muted: #746B60;
+      --btn-bg: #8D795D;
+      --btn-hover: #75634A;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .serif {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+    }
+
+    /* Welcome Overlay */
+    #welcome-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, #FAF7F2 0%, #EFE8DC 100%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #welcome-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .welcome-subtitle {
+      font-size: 0.78rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .welcome-names {
+      font-size: clamp(2.8rem, 8vw, 4.4rem);
+      font-style: italic;
+      color: var(--text-main);
+      line-height: 1.1;
+      margin-bottom: 1.8rem;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      background-color: var(--btn-bg);
+      color: #FFFDF9;
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 999px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+      box-shadow: 0 6px 20px rgba(141, 121, 93, 0.18);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--btn-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Floating Music Button */
+    #music-toggle {
+      position: fixed;
+      top: 1.1rem;
+      right: 1.1rem;
+      z-index: 900;
+      background: rgba(255, 253, 249, 0.92);
+      border: 1px solid var(--sand-border);
+      color: var(--btn-bg);
+      border-radius: 999px;
+      padding: 0.55rem 0.95rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(59, 53, 46, 0.08);
+      backdrop-filter: blur(6px);
+      transition: all 0.25s ease;
+    }
+
+    #music-toggle:hover {
+      border-color: var(--gold-accent);
+    }
+
+    .eq-bars {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 12px;
+    }
+
+    .eq-bars span {
+      width: 2px;
+      height: 4px;
+      background-color: var(--gold-accent);
+      border-radius: 2px;
+      transition: height 0.2s ease;
+    }
+
+    .playing .eq-bars span:nth-child(1) { animation: bounce 0.9s infinite ease-in-out; }
+    .playing .eq-bars span:nth-child(2) { animation: bounce 0.65s infinite ease-in-out 0.2s; }
+    .playing .eq-bars span:nth-child(3) { animation: bounce 0.8s infinite ease-in-out 0.35s; }
+
+    @keyframes bounce {
+      0%, 100% { height: 4px; }
+      50% { height: 12px; }
+    }
+
+    /* Layout Container */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 1.4rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 4.5rem 1.4rem 3.5rem;
+      background: radial-gradient(circle at top, #FFFDF9 0%, var(--bg-cream) 75%);
+    }
+
+    .hero-tag {
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold-accent);
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-names {
+      font-size: clamp(3.2rem, 10vw, 5.2rem);
+      font-weight: 400;
+      line-height: 1.05;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-names span.amp {
+      font-style: italic;
+      color: var(--gold-accent);
+      font-size: 0.85em;
+      margin: 0 0.15em;
+    }
+
+    .hero-quote {
+      max-width: 460px;
+      margin: 1.6rem auto 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.25rem;
+      color: var(--text-muted);
+    }
+
+    /* Countdown Section */
+    .countdown-section {
+      background-color: var(--bg-beige);
+      border-top: 1px solid var(--sand-border);
+      border-bottom: 1px solid var(--sand-border);
+      padding: 2.8rem 1rem;
+      text-align: center;
+    }
+
+    .section-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-accent);
+      margin-bottom: 0.4rem;
+    }
+
+    .section-title {
+      font-size: 2.1rem;
+      color: var(--text-main);
+      margin-bottom: 1.6rem;
+    }
+
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .time-box {
+      background-color: var(--bg-card);
+      border: 1px solid var(--sand-border);
+      border-radius: 14px;
+      padding: 1rem 0.4rem;
+      box-shadow: 0 4px 16px rgba(59, 53, 46, 0.03);
+    }
+
+    .time-num {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.15rem;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--btn-bg);
+    }
+
+    .time-label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 0.45rem;
+    }
+
+    /* Cards Section */
+    .details-section {
+      padding: 3.5rem 0 1.5rem;
+    }
+
+    .info-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--sand-border);
+      border-radius: 20px;
+      padding: 2.5rem 1.8rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(59, 53, 46, 0.04);
+    }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      background-color: var(--bg-beige);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--btn-bg);
+    }
+
+    .info-card h2 {
+      font-size: 2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .info-highlight {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.38rem;
+      font-weight: 600;
+      color: var(--btn-bg);
+      margin-bottom: 0.35rem;
+    }
+
+    .info-text {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      max-width: 420px;
+      margin: 0 auto 1.3rem;
+    }
+
+    .outdoor-badge {
+      display: inline-block;
+      background-color: var(--bg-beige);
+      border: 1px solid var(--sand-border);
+      color: var(--text-main);
+      font-size: 0.76rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.42rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+
+    .map-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .map-secondary-link {
+      font-size: 0.78rem;
+      color: var(--btn-bg);
+      text-decoration: underline;
+    }
+
+    /* RSVP Section */
+    .rsvp-section {
+      padding: 1rem 0 4rem;
+    }
+
+    .rsvp-card {
+      background-color: var(--bg-beige);
+      border: 1px solid var(--sand-border);
+      border-radius: 22px;
+      padding: 2.6rem 1.8rem;
+      text-align: center;
+    }
+
+    .rsvp-form {
+      max-width: 440px;
+      margin: 1.5rem auto 0;
+      text-align: left;
+    }
+
+    .form-group {
+      margin-bottom: 1.15rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.74rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--sand-border);
+      background-color: var(--bg-card);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--gold-accent);
+    }
+
+    .radio-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+    }
+
+    .radio-option {
+      position: relative;
+    }
+
+    .radio-option input {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .radio-option span {
+      display: block;
+      text-align: center;
+      padding: 0.75rem 0.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--sand-border);
+      background-color: var(--bg-card);
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .radio-option input:checked + span {
+      background-color: var(--btn-bg);
+      color: #FFFDF9;
+      border-color: var(--btn-bg);
+    }
+
+    .form-actions {
+      text-align: center;
+      margin-top: 1.6rem;
+    }
+
+    .quick-wa {
+      margin-top: 1.1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .quick-wa a {
+      color: var(--btn-bg);
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2.5rem 1.2rem 3.5rem;
+      border-top: 1px solid var(--sand-border);
+      color: var(--text-muted);
+    }
+
+    footer .names-end {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.9rem;
+      color: var(--text-main);
+      margin-top: 0.4rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pantalla de bienvenida para habilitar audio en celulares -->
+  <div id="welcome-screen">
+    <p class="welcome-subtitle">Nos casamos</p>
+    <h2 class="welcome-names">Micaela &amp; Lucas</h2>
+    <button class="btn-primary" id="enter-btn">Abrir invitación</button>
+  </div>
+
+  <!-- Botón flotante de música -->
+  <button id="music-toggle" aria-label="Controlar música">
+    <span class="eq-bars"><span></span><span></span><span></span></span>
+    <span id="music-label">Música</span>
+  </button>
+
+  <!-- Si más adelante querés usar un archivo MP3 propio, descomenta la línea de abajo y poné el archivo en la misma carpeta: -->
+  <!-- <audio id="bg-audio" loop src="cancion.mp3"></audio> -->
+
+  <!-- Portada Principal (sin fecha ni horario repetidos) -->
+  <header class="hero">
+    <div class="container">
+      <svg width="170" height="82" viewBox="0 0 170 82" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 1rem;">
+        <path d="M85 72C85 48 64 26 32 18" stroke="#8F9A88" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M85 72C85 48 106 26 138 18" stroke="#8F9A88" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M85 72C85 44 85 24 85 10" stroke="#B59E7A" stroke-width="1.3" stroke-linecap="round"/>
+        <ellipse cx="55" cy="31" rx="11" ry="5" transform="rotate(-30 55 31)" stroke="#8F9A88" stroke-width="1.2"/>
+        <ellipse cx="115" cy="31" rx="11" ry="5" transform="rotate(30 115 31)" stroke="#8F9A88" stroke-width="1.2"/>
+        <ellipse cx="66" cy="49" rx="9.5" ry="4.5" transform="rotate(-22 66 49)" stroke="#8F9A88" stroke-width="1.2"/>
+        <ellipse cx="104" cy="49" rx="9.5" ry="4.5" transform="rotate(22 104 49)" stroke="#8F9A88" stroke-width="1.2"/>
+        <circle cx="85" cy="9" r="5" stroke="#B59E7A" stroke-width="1.3"/>
+        <circle cx="78" cy="14" r="3" stroke="#B59E7A" stroke-width="1.1"/>
+        <circle cx="92" cy="14" r="3" stroke="#B59E7A" stroke-width="1.1"/>
+        <circle cx="29" cy="17" r="4" stroke="#B59E7A" stroke-width="1.2"/>
+        <circle cx="141" cy="17" r="4" stroke="#B59E7A" stroke-width="1.2"/>
+      </svg>
+
+      <p class="hero-tag">¡Nos Casamos!</p>
+      <h1 class="hero-names">Micaela <span class="amp">&amp;</span> Lucas</h1>
+
+      <p class="hero-quote">
+        “Hay momentos en la vida que son especiales por sí solos, pero compartirlos con las personas que queremos los vuelve inolvidables.”
+      </p>
+    </div>
+  </header>
+
+  <!-- Cuenta Regresiva -->
+  <section class="countdown-section">
+    <div class="container">
+      <p class="section-eyebrow">Falta cada vez menos</p>
+      <h2 class="section-title">Cuenta Regresiva</h2>
+      <div class="countdown-grid">
+        <div class="time-box">
+          <span class="time-num" id="days">00</span>
+          <span class="time-label">Días</span>
+        </div>
+        <div class="time-box">
+          <span class="time-num" id="hours">00</span>
+          <span class="time-label">Horas</span>
+        </div>
+        <div class="time-box">
+          <span class="time-num" id="minutes">00</span>
+          <span class="time-label">Minutos</span>
+        </div>
+        <div class="time-box">
+          <span class="time-num" id="seconds">00</span>
+          <span class="time-label">Segundos</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detalles del Evento -->
+  <main class="details-section">
+    <div class="container">
+
+      <!-- Tarjeta Lugar y Horario -->
+      <article class="info-card">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+        </div>
+
+        <p class="section-eyebrow">Cuándo y Dónde</p>
+        <h2>Ceremonia &amp; Celebración</h2>
+        <p class="info-highlight">Lunes 21 de Diciembre — 17:00 hs</p>
+        <p class="info-text">
+          <strong>Salón El Paraíso</strong><br />
+          Te esperamos puntualmente para celebrar juntos este día tan especial.
+        </p>
+        <div>
+          <span class="outdoor-badge">☀ Evento al aire libre durante el día</span>
+        </div>
+        <div class="map-actions">
+          <a href="https://maps.app.goo.gl/qVGf1Ph9SeZC3q739" id="map-btn" class="btn-primary">
+            Ver ubicación en Google Maps
+          </a>
+          <a href="https://www.google.com/maps/search/?api=1&query=Salon+El+Paraiso" target="_blank" rel="noopener noreferrer" class="map-secondary-link">
+            Abrir en navegador si no tenés la app
+          </a>
+        </div>
+      </article>
+
+      <!-- Tarjeta Dress Code -->
+      <article class="info-card">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path>
+          </svg>
+        </div>
+
+        <p class="section-eyebrow">Código de Vestimenta</p>
+        <h2>Dress Code: Elegante</h2>
+        <p class="info-text" style="margin-bottom: 0;">
+          Como la celebración será <strong>al aire libre durante el día</strong>, les recomendamos elegir <strong>calzado cómodo</strong> para disfrutar del jardín y bailar sin preocupaciones.
+        </p>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- Confirmación de Asistencia (RSVP) -->
+  <section class="rsvp-section" id="rsvp">
+    <div class="container">
+      <div class="rsvp-card">
+        <p class="section-eyebrow">Acompañanos</p>
+        <h2 class="section-title" style="margin-bottom: 0.4rem;">Confirmar Asistencia</h2>
+        <p class="info-text" style="margin-bottom: 0;">
+          Completá tus datos para enviarnos tu confirmación directa por WhatsApp y ayudarnos a organizar todo.
+        </p>
+
+        <form class="rsvp-form" id="rsvp-form">
+          <div class="form-group">
+            <label for="guest-name">Nombre y Apellido</label>
+            <input type="text" id="guest-name" class="form-control" placeholder="Ej: Sofía Martínez" required />
+          </div>
+
+          <div class="form-group">
+            <label>¿Asistís al evento?</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="attendance" value="¡Sí, confirmo mi asistencia!" checked />
+                <span>Sí, allí estaré</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="attendance" value="Lamentablemente no podré asistir" />
+                <span>No podré ir</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group" id="guests-count-group">
+            <label for="guests-count">Cantidad de personas (incluyéndote)</label>
+            <select id="guests-count" class="form-control">
+              <option value="1 persona">1 persona</option>
+              <option value="2 personas">2 personas</option>
+              <option value="3 personas">3 personas</option>
+              <option value="4 personas">4 personas</option>
+              <option value="5 o más personas">5 o más personas</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="guest-notes">Restricción alimentaria o mensaje (opcional)</label>
+            <input type="text" id="guest-notes" class="form-control" placeholder="Ej: Menú vegetariano / ¡Muchas felicidades!" />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Confirmar por WhatsApp</button>
+          </div>
+        </form>
+
+        <p class="quick-wa">
+          ¿Preferís escribirnos directo? <a href="https://wa.me/5492975812930?text=%C2%A1Hola!%20Quería%20confirmar%20mi%20asistencia%20al%20casamiento%20de%20Micaela%20y%20Lucas." target="_blank" rel="noopener noreferrer">Abrir chat de WhatsApp</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pie de página -->
+  <footer>
+    <p style="font-size: 0.85rem;">¡Te esperamos para celebrar juntos!</p>
+    <p class="names-end">Micaela &amp; Lucas</p>
+  </footer>
+
+  <script>
+    // 1. Cuenta regresiva al 21 de diciembre de 2026 a las 17:00 hs
+    const weddingDate = new Date('2026-12-21T17:00:00').getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = weddingDate - now;
+
+      if (distance <= 0) {
+        document.getElementById('days').textContent = '00';
+        document.getElementById('hours').textContent = '00';
+        document.getElementById('minutes').textContent = '00';
+        document.getElementById('seconds').textContent = '00';
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById('days').textContent = String(days).padStart(2, '0');
+      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // 2. Melodía romántica sintetizada (Web Audio API) + soporte opcional para MP3
+    let audioCtx = null;
+    let isPlaying = false;
+    let melodyTimer = null;
+    let noteIndex = 0;
+
+    const notes = [
+      261.63, 329.63, 392.00, 493.88, 523.25, 493.88, 392.00, 329.63,
+      220.00, 261.63, 329.63, 392.00, 440.00, 392.00, 329.63, 261.63,
+      174.61, 220.00, 261.63, 329.63, 349.23, 329.63, 261.63, 220.00,
+      196.00, 246.94, 293.66, 392.00, 440.00, 392.00, 293.66, 246.94
+    ];
+
+    function playSoftNote(freq) {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.055, now + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start(now);
+      osc.stop(now + 1.65);
+    }
+
+    function startMusic() {
+      const mp3El = document.getElementById('bg-audio');
+      if (mp3El) {
+        mp3El.play();
+        isPlaying = true;
+        updateMusicUI();
+        return;
+      }
+
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      if (isPlaying) return;
+
+      isPlaying = true;
+      updateMusicUI();
+      playSoftNote(notes[noteIndex % notes.length]);
+      noteIndex++;
+
+      melodyTimer = setInterval(() => {
+        if (!isPlaying) return;
+        playSoftNote(notes[noteIndex % notes.length]);
+        noteIndex++;
+      }, 620);
+    }
+
+    function stopMusic() {
+      const mp3El = document.getElementById('bg-audio');
+      if (mp3El) {
+        mp3El.pause();
+      }
+      isPlaying = false;
+      clearInterval(melodyTimer);
+      updateMusicUI();
+    }
+
+    function updateMusicUI() {
+      const btn = document.getElementById('music-toggle');
+      const label = document.getElementById('music-label');
+      if (isPlaying) {
+        btn.classList.add('playing');
+        label.textContent = 'Pausar';
+      } else {
+        btn.classList.remove('playing');
+        label.textContent = 'Música';
+      }
+    }
+
+    document.getElementById('enter-btn').addEventListener('click', () => {
+      document.getElementById('welcome-screen').classList.add('hidden');
+      startMusic();
+    });
+
+    document.getElementById('music-toggle').addEventListener('click', () => {
+      if (isPlaying) {
+        stopMusic();
+      } else {
+        startMusic();
+      }
+    });
+
+    // 3. Mostrar/ocultar cantidad de invitados según respuesta
+    document.querySelectorAll('input[name="attendance"]').forEach((radio) => {
+      radio.addEventListener('change', (e) => {
+        const countGroup = document.getElementById('guests-count-group');
+        countGroup.style.display = e.target.value.includes('No') ? 'none' : 'block';
+      });
+    });
+
+    // 4. Envío de confirmación a WhatsApp (5492975812930)
+    document.getElementById('rsvp-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('guest-name').value.trim();
+      const attendance = document.querySelector('input[name="attendance"]:checked').value;
+      const count = document.getElementById('guests-count').value;
+      const notesVal = document.getElementById('guest-notes').value.trim();
+
+      let message = `¡Hola Micaela y Lucas! Soy *${name}*.
+`;
+      message += `• Respuesta: ${attendance}
+`;
+      if (!attendance.includes('No')) {
+        message += `• Cantidad: ${count}
+`;
+      }
+      if (notesVal) {
+        message += `• Comentario: ${notesVal}`;
+      }
+
+      const phone = '5492975812930';
+      const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+      window.location.href = whatsappUrl;
+    });
+  </script>
+</body>
+</html>
